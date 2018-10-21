@@ -1,5 +1,6 @@
 ﻿import { dispatch } from '../dispatcher/Dispatcher';
 import { ActionTypes } from '../constants/AppConstants';
+import axios from 'axios';
 
 export const actionCreators = {
   requestWeatherForecasts: async (startDateIndex, currentDateIndex) => {
@@ -10,9 +11,15 @@ export const actionCreators = {
 
     dispatch({ type: ActionTypes.requestWeatherForecastsType, startDateIndex });
 
-    const url = `api/SampleData/WeatherForecasts?startDateIndex=${startDateIndex}`;
-    const response = await fetch(url);
-    const forecasts = await response.json();
+    const baseUrl = 'api';
+    const axiosInstance = axios.create({
+      baseURL: baseUrl,
+    });
+
+    const path = `SampleData/WeatherForecasts?startDateIndex=${startDateIndex}`;
+    const response = await axiosInstance.get(path)
+      .then((response) => response);
+    const forecasts = await response.data;
 
     dispatch({ type: ActionTypes.receiveWeatherForecastsType, startDateIndex, forecasts });
   }
